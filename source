@@ -3,6 +3,32 @@ local function runCmd(msg)
     game.Players:Chat(msg)
 end
 
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+function Notify(title, msg, ...) 
+    local args = {...}
+
+    if args[1] then
+        Notification:Notify(
+            {Title = title, Description = msg},
+            {OutlineColor = Color3.fromRGB(86, 84, 240),Time = 5, Type = "option"},
+            {Callback = args[1]}
+        )
+    else
+        Notification:Notify(
+            {Title = title, Description = msg},
+            {OutlineColor = Color3.fromRGB(200, 200, 200),Time = 5, Type = "default"}
+        )
+    end
+end
+
+wait(0.5)
+
+local plat = "[🛡️] Platinum [🛡️]"
+
+Notify(plat, "Intialized.")
+
 local LocalPlayer = game.Players.LocalPlayer
 
 local bToolsGiven = false
@@ -20,7 +46,6 @@ local function checkAndGiveBTools()
     end
 
     runCmd(":btools me")
-    print("BuildingTools were not present. They have been given.")
     bToolsGiven = true
     return true
 end
@@ -68,6 +93,8 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
         if not checkAndGiveBTools() then return end
         local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
         clearParts(serverEndpoint)  --run clearparts lel
+        Notify(plat, "Cleared every part in the workspace..")
+        runCmd(":setmessage [🛡️] Platinum: Cleared every part in the workspace. [🛡️] | :wait 6 | :setmessage off")
 
     elseif message:lower() == ".building off" then
         if not buildingOff then
@@ -75,12 +102,14 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
             buildingOff = true 
             monitorNewParts(serverEndpoint)
+            runCmd(:setmessage [🛡️] Platinum: Building has been turned off. [🛡️])
             print("Building off mode is now active. Any new parts will be removed.")
         else
             print("Building off is already active.")
         end
 
     elseif message:lower() == ".resetpad" then
+Notify(plat, "Resetting admin...")
 pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 wait(0.001)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(23,28,106)
@@ -106,6 +135,7 @@ wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
     elseif message:lower() == ".getadmin" then
+Notify(plat, "Grabbing admin...")
 pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 wait(0.001)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
@@ -129,19 +159,20 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isAntiJailActive = false
 
 elseif message:lower() == ".antijail on" then
-local function monitorJail()
-    local heartbeatConnection
-    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        if game.Workspace:FindFirstChild(game.Players.LocalPlayer.Name .. "_ADONISJAIL") then
-            runCmd(":free me")
-            heartbeatConnection:Disconnect()
-        end
-    end)
-end
+    local function monitorJail()
+        local heartbeatConnection
+        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
+                runCmd(":free me")
+                heartbeatConnection:Disconnect()
+            end
+        end)
+    end
 
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorJail()
+        Notify(plat, "Anti-Jail has been enabled.")
         print("Anti-jail Monitoring enabled.")
     else
         print("Anti-jail Monitoring is already enabled.")
@@ -150,15 +181,47 @@ end
 elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
+        Notify(plat, "Anti-Jail has been disabled.")
         print("Anti-jail Monitoring disabled.")
     else
         print("Anti-jail Monitoring is already disabled.")
     end
     
     elseif message:lower() == ".shutdown" then
-    wait(1)
+        Notify(plat, "Crashing server..")
         runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
+    local antifreeze = false
+
+    elseif message:lower() == ".antifreeze on" then
+    local function monitorfreezep()
+        local heartbeatConnection
+        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if LocalPlayer.Anchor = true then
+                runCmd(":unfreeze me")
+                heartbeatConnection:Disconnect()
+                end
+            end)
+        end
+    
+        if not antifreeze then
+            antifreeze = true
+            monitorfreezep()
+            Notify(plat, "Anti-Freeze has been enabled.")
+            print("Anti-Freeze Monitoring enabled.")
+        else
+            print("Anti-Freeze Monitoring is already enabled.")
+        end
+    
+    elseif message:lower() == ".antifreeze off"
+
+    if monitorfreezep then
+        monitorfreezep = false
+        Notify(plat, "Anti-Freeze has been disabled.")
+        print("Anti-Freeze Monitoring disabled.")
+    else
+        print("Anti-Freeze Monitoring is already disabled.")
+    end
 
     elseif message:lower() == ".building on" then
         if buildingOff then
@@ -169,6 +232,7 @@ elseif message:lower() == ".antijail off" then
                 newPartConnection:Disconnect()
                 newPartConnection = nil
             end
+            Notify(plat, "Building has been turned on.")
             print("Building on mode is now active. New parts will not be automatically removed.")
         else
             print("Building on is already active.")
