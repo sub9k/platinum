@@ -112,7 +112,7 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
             buildingOff = true 
             monitorNewParts(serverEndpoint)
-            runCmd(:setmessage [🛡️] Platinum: Building has been turned off. [🛡️])
+            runCmd(":setmessage [🛡️] Platinum: Building has been turned off. [🛡️]")
             print("Building off mode is now active. Any new parts will be removed.")
         else
             print("Building off is already active.")
