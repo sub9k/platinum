@@ -55,8 +55,7 @@ local commands = {
 
 local LocalPlayer = game.Players.LocalPlayer
 
-local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 
 local BtoolsCheck = false
 
@@ -224,7 +223,7 @@ elseif message:lower() == ".antijail off" then
     local function monitorfreezep()
         local heartbeatConnection
         heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if humanoidRootPart.Anchored == true then
+            if hrp.Anchored == true then
                 runCmd(":unfreeze me")
                 heartbeatConnection:Disconnect()
                 end
@@ -251,9 +250,9 @@ elseif message:lower() == ".antijail off" then
     end
 
     elseif message:lower() == ".cmds" then
+    Notify(plat, "Printed commands. Press F9 to check console.")
     for command, description in pairs(commands) do
-        print(command .. ": " .. description)
-        Notify(plat, "Printed commands. Press F9 to check console.")
+        print(command .. "  " .. description)
     end
 
     elseif message:lower() == ".building on" then
