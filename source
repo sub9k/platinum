@@ -183,16 +183,22 @@ wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 local isAntiJailActive = false
+local isUnjailing = false
 
-elseif message:lower() == ".antijail on" then
-    local function monitorjailstatus()
-        local heartbeatConnection
-        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
-                runCmd(":free me")
-            end
-        end)
-    end
+local function monitorjailstatus()
+    local heartbeatConnection
+    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
+            isUnjailing = true
+            runCmd(":free me")
+            heartbeatConnection:Disconnect()
+
+            isUnjailing = false
+
+            monitorjailstatus()
+        end
+    end)
+end
 
     if not isAntiJailActive then
         isAntiJailActive = true
@@ -217,13 +223,17 @@ elseif message:lower() == ".antijail off" then
         runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
     local antifreeze = false
+    local isFrozen = false
 
     elseif message:lower() == ".antifreeze on" then
-    local function monitorfreezep()
-        local heartbeatConnection1
-        heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
-            if hrp.Anchored == true then
-                runCmd(":unfreeze me")
+        local function monitorfreezep()
+            local heartbeatConnection1
+            heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
+                if hrp.Anchored == true and not isFrozen then
+                    runCmd(":unfreeze me")
+                    isFrozen = true
+                elseif hrp.Anchored == false then
+                    isFrozen = false
                 end
             end)
         end
