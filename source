@@ -1,7 +1,7 @@
 --[[
 Platinum made by @ftsf
 Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/source"))()
-LAST UPDATED 1/11/25
+Enjoy.
 ]]--
 
 
@@ -231,7 +231,7 @@ elseif message:lower() == ".antijail off" then
             local heartbeatConnection1
             heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
                 if hrp.Anchored == true and not isFrozen then
-                    runCmd(":unfreeze me")
+                    runCmd(":thaw me")
                     isFrozen = true
                 elseif hrp.Anchored == false then
                     isFrozen = false
