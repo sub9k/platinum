@@ -211,6 +211,7 @@ end
 elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
+        isUnjailing = false
         Notify(plat, "Anti-Jail has been disabled.")
         print("Anti-jail Monitoring disabled.")
     else
@@ -250,6 +251,7 @@ elseif message:lower() == ".antijail off" then
 
     if monitorfreezep then
         monitorfreezep = false
+        local antifreeze = false
         Notify(plat, "Anti-Freeze has been disabled.")
         print("Anti-Freeze Monitoring disabled.")
     else
