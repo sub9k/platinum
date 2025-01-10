@@ -1,3 +1,13 @@
+--[[
+Platinum made by @ftsf
+Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/source"))()
+Enjoy.
+]]--
+
+
+
+
+
 -- cmd run function
 local function runCmd(msg)
     game.Players:Chat(msg)
