@@ -22,13 +22,13 @@ function Notify(title, msg, ...)
     if args[1] then
         Notification:Notify(
             {Title = title, Description = msg},
-            {OutlineColor = Color3.fromRGB(86, 84, 240),Time = 5, Type = "option"},
+            {OutlineColor = Color3.fromRGB(200, 200, 200),Time = 3, Type = "option"},
             {Callback = args[1]}
         )
     else
         Notification:Notify(
             {Title = title, Description = msg},
-            {OutlineColor = Color3.fromRGB(200, 200, 200),Time = 5, Type = "default"}
+            {OutlineColor = Color3.fromRGB(200, 200, 200),Time = 3, Type = "default"}
         )
     end
 end
@@ -41,38 +41,38 @@ Notify(plat, "Intialized.")
 
 local LocalPlayer = game.Players.LocalPlayer
 
-local bToolsGiven = false
+local BtoolsCheck = false
 
-local function checkAndGiveBTools()
-    if bToolsGiven then
+local function GiveBtools()
+    if BtoolsCheck then
         return true
     end
 
     for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
         if tool.Name == "BuildingTools" then
-            bToolsGiven = true
+            BtoolsCheck = true
             return true
         end
     end
 
     runCmd(":btools me")
-    bToolsGiven = true
+    BtoolsCheck = true
     return true
 end
 
-local function clearParts(serverEndpoint)
-    local partsToRemove = {}
+local function partclear(serverEndpoint)
+    local clearpartlist = {}
 
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("BasePart") and not obj.Locked and not obj:FindFirstAncestorOfClass("Player") then
-            table.insert(partsToRemove, obj)
+            table.insert(clearpartlist, obj)
         end
     end
 
-    if #partsToRemove > 0 then
+    if #clearpartlist > 0 then
         local args = {
             [1] = "Remove",
-            [2] = partsToRemove
+            [2] = clearpartlist
         }
 
         serverEndpoint:InvokeServer(unpack(args))
@@ -82,7 +82,7 @@ end
 local buildingOff = false
 local newPartConnection
 
-local function monitorNewParts(serverEndpoint)
+local function checkparts(serverEndpoint)
     if newPartConnection then
         newPartConnection:Disconnect()
     end
@@ -100,19 +100,19 @@ end
 
 game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
     if message:lower() == ".pclear" then
-        if not checkAndGiveBTools() then return end
+        if not GiveBtools() then return end
         local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-        clearParts(serverEndpoint)  --run clearparts lel
+        partclear(serverEndpoint)  --run pclear lel
         Notify(plat, "Cleared every part in the workspace..")
-        runCmd(":setmessage [🛡️] Platinum: Cleared every part in the workspace. [🛡️] | :wait 6 | :setmessage off")
+        runCmd(":setmessage [🛡️] Cleared every part in the workspace. [🛡️] | :wait 6 | :setmessage off")
 
     elseif message:lower() == ".building off" then
         if not buildingOff then
-            if not checkAndGiveBTools() then return end
+            if not GiveBtools() then return end
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
             buildingOff = true 
-            monitorNewParts(serverEndpoint)
-            runCmd(":setmessage [🛡️] Platinum: Building has been turned off. [🛡️]")
+            checkparts(serverEndpoint)
+            runCmd(":setmessage [🛡️] Building has been turned off. [🛡️]")
             print("Building off mode is now active. Any new parts will be removed.")
         else
             print("Building off is already active.")
@@ -169,7 +169,7 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isAntiJailActive = false
 
 elseif message:lower() == ".antijail on" then
-    local function monitorJail()
+    local function monitorjailstatus()
         local heartbeatConnection
         heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
             if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
@@ -181,7 +181,7 @@ elseif message:lower() == ".antijail on" then
 
     if not isAntiJailActive then
         isAntiJailActive = true
-        monitorJail()
+        monitorjailstatus()
         Notify(plat, "Anti-Jail has been enabled.")
         print("Anti-jail Monitoring enabled.")
     else
@@ -207,7 +207,7 @@ elseif message:lower() == ".antijail off" then
     local function monitorfreezep()
         local heartbeatConnection
         heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if LocalPlayer.Anchored == true then
+            if LocalPlayer.HumanoidRootPart.Anchored == true then
                 runCmd(":unfreeze me")
                 heartbeatConnection:Disconnect()
                 end
@@ -223,7 +223,7 @@ elseif message:lower() == ".antijail off" then
             print("Anti-Freeze Monitoring is already enabled.")
         end
     
-    elseif message:lower() == ".antifreeze off"
+    elseif message:lower() == ".antifreeze off" then
 
     if monitorfreezep then
         monitorfreezep = false
@@ -235,7 +235,7 @@ elseif message:lower() == ".antijail off" then
 
     elseif message:lower() == ".building on" then
         if buildingOff then
-            if not checkAndGiveBTools() then return end
+            if not GiveBtools() then return end
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
             buildingOff = false
             if newPartConnection then
@@ -243,7 +243,7 @@ elseif message:lower() == ".antijail off" then
                 newPartConnection = nil
             end
             Notify(plat, "Building has been turned on.")
-            print("Building on mode is now active. New parts will not be automatically removed.")
+            print("Building on is now active. New parts will not be automatically removed.")
         else
             print("Building on is already active.")
         end
