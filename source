@@ -41,6 +41,8 @@ Notify(plat, "Intialized.")
 
 local LocalPlayer = game.Players.LocalPlayer
 
+local WLocalPlayer = game.Workspace.LocalPlayer
+
 local BtoolsCheck = false
 
 local function GiveBtools()
@@ -207,7 +209,7 @@ elseif message:lower() == ".antijail off" then
     local function monitorfreezep()
         local heartbeatConnection
         heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if LocalPlayer.HumanoidRootPart.Anchored == true then
+            if WLocalPlayer.HumanoidRootPart.Anchored == true then
                 runCmd(":unfreeze me")
                 heartbeatConnection:Disconnect()
                 end
