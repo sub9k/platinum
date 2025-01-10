@@ -185,6 +185,7 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isAntiJailActive = false
 local isUnjailing = false
 
+elseif message:lower() == ".antijail on" then
 local function monitorjailstatus()
     local heartbeatConnection
     heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -192,9 +193,7 @@ local function monitorjailstatus()
             isUnjailing = true
             runCmd(":free me")
             heartbeatConnection:Disconnect()
-
             isUnjailing = false
-
             monitorjailstatus()
         end
     end)
