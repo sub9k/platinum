@@ -1,7 +1,9 @@
--- cmd run func (BASICALLY MAIN FUNC, DONT DEL THIS)
+-- cmd run function
 local function runCmd(msg)
     game.Players:Chat(msg)
 end
+
+local LocalPlayer = game.Players.LocalPlayer
 
 local bToolsGiven = false
 
