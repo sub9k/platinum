@@ -1,8 +1,13 @@
 --[[
 Platinum made by @ftsf
-Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/source"))()
+NOTE: THIS IS A TEST BUILD, IT MAY OR MAY NOT WORK.
+Loadstring: loadstring(game:HttpGet("loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/TestBuild"))()"))()
 Enjoy.
 ]]--
+
+
+
+
 
 -- cmd run function
 local function runCmd(msg)
@@ -33,17 +38,17 @@ wait(0.5)
 
 local plat = "[🛡️] Platinum [🛡️]"
 
-Notify(plat, "Initialized.")
+Notify(plat, "Intialized.")
 
 local commands = {
     [".cmds"] = "Views the concurrent commands for platinum.",
     [".pclear"] = "Clears all parts in the workspace.",
     [".resetpad"] = "Resets admin pad",
     [".getadmin"] = "Teleports to the admin pads then teleports you back to your original position.",
-    [".antijail on"] = "Automatically Unjails you when jailed.",
+    [".antijail on"] = "Auotmatically Unjails you when jailed.",
     [".antijail off"] = "Disables anti-jail protection.",
     [".shutdown"] = "Crashes the server.",
-    [".antifreeze on"] = "Automatically Unfreezes yourself when frozen.",
+    [".antifreeze on"] = "Automatically Unfreezes urself when frozen.",
     [".antifreeze off"] = "Disables anti-freeze protection.",
     [".building off"] = "Disables building.",
     [".building on"] = "Re-enables building."
@@ -132,97 +137,97 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
         end
 
     elseif message:lower() == ".resetpad" or "/e .resetpad" then
-        Notify(plat, "Resetting admin...")
-        pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        wait(0.001)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(23,28,106)
-        wait(0.3)
-        fireclickdetector(game.Workspace.SecureParts.ResetPads.ClickDetector)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(14,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(10,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5.5,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10.3,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+Notify(plat, "Resetting admin...")
+pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+wait(0.001)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(23,28,106)
+wait(0.3)
+fireclickdetector(game.Workspace.SecureParts.ResetPads.ClickDetector)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(14,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(10,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10.3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
     elseif message:lower() == ".getadmin" or "/e .getadmin" then
-        Notify(plat, "Grabbing admin...")
-        pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        wait(0.001)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(14,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(10,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5.5,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10.3,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28.2,106.2)
-        wait(0.1)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+Notify(plat, "Grabbing admin...")
+pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+wait(0.001)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(14,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(10,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10.3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
-    local isAntiJailActive = false
+local isAntiJailActive = false
 
-    elseif message:lower() == ".antijail on" or "/e .antijail on" then
-        local function monitorjailstatus()
-            local heartbeatConnection
-            heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
-                    runCmd(":free me")
-                    heartbeatConnection:Disconnect()
-                end
-            end)
-        end
+elseif message:lower() == ".antijail on" or "/e .antijail on" then
+    local function monitorjailstatus()
+        local heartbeatConnection
+        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
+                runCmd(":free me")
+                heartbeatConnection:Disconnect()
+            end
+        end)
+    end
 
-        if not isAntiJailActive then
-            isAntiJailActive = true
-            monitorjailstatus()
-            Notify(plat, "Anti-Jail has been enabled.")
-            print("Anti-jail Monitoring enabled.")
-        else
-            print("Anti-jail Monitoring is already enabled.")
-        end
+    if not isAntiJailActive then
+        isAntiJailActive = true
+        monitorjailstatus()
+        Notify(plat, "Anti-Jail has been enabled.")
+        print("Anti-jail Monitoring enabled.")
+    else
+        print("Anti-jail Monitoring is already enabled.")
+    end
 
-    elseif message:lower() == ".antijail off" or "/e .antijail off" then
-        if isAntiJailActive then
-            isAntiJailActive = false
-            Notify(plat, "Anti-Jail has been disabled.")
-            print("Anti-jail Monitoring disabled.")
-        else
-            print("Anti-jail Monitoring is already disabled.")
-        end
-        
+elseif message:lower() == ".antijail off" or "/e .antijail off" then
+    if isAntiJailActive then
+        isAntiJailActive = false
+        Notify(plat, "Anti-Jail has been disabled.")
+        print("Anti-jail Monitoring disabled.")
+    else
+        print("Anti-jail Monitoring is already disabled.")
+    end
+    
     elseif message:lower() == ".shutdown" or "/e .shutdown" then
         Notify(plat, "Crashing server..")
-        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
+        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
     local antifreeze = false
 
     elseif message:lower() == ".antifreeze on" or "/e .antifreeze on" then
-        local function monitorfreezep()
-            local heartbeatConnection
-            heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                if humanoidRootPart.Anchored == true then
-                    runCmd(":unfreeze me")
-                    heartbeatConnection:Disconnect()
+    local function monitorfreezep()
+        local heartbeatConnection
+        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if humanoidRootPart.Anchored == true then
+                runCmd(":unfreeze me")
+                heartbeatConnection:Disconnect()
                 end
             end)
         end
@@ -238,18 +243,19 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
     
     elseif message:lower() == ".antifreeze off" or "/e .antifreeze off" then
 
-        if monitorfreezep then
-            monitorfreezep = false
-            Notify(plat, "Anti-Freeze has been disabled.")
-            print("Anti-Freeze Monitoring disabled.")
-        else
-            print("Anti-Freeze Monitoring is already disabled.")
-        end
+    if monitorfreezep then
+        monitorfreezep = false
+        Notify(plat, "Anti-Freeze has been disabled.")
+        print("Anti-Freeze Monitoring disabled.")
+    else
+        print("Anti-Freeze Monitoring is already disabled.")
+    end
 
     elseif message:lower() == ".cmds" then
-        for command, description in pairs(commands) do
-            print(command .. ": " .. description)
-        end
+    for command, description in pairs(commands) do
+        print(command .. ": " .. description)
+        Notify(plat, "Printed commands. Press F9 to check console.")
+    end
 
     elseif message:lower() == ".building on" or "/e .building on" then
         if buildingOff then
@@ -266,24 +272,4 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
             print("Building on is already active.")
         end
     end
-end)
-
-local function onPlayerRespawn()
-    if buildingOff then
-        if not GiveBtools() then return end
-        local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-        checkparts(serverEndpoint)
-    end
-
-    local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-    partclear(serverEndpoint)
-end
-
-game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
-    character:WaitForChild("Humanoid").Died:Connect(function()
-        Notify(plat, "Death detected. Re-running .building off command.")
-        print("Player died, resetting building off and running pclear.")
-    end)
-
-    onPlayerRespawn()
 end)
