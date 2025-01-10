@@ -7,6 +7,7 @@ Enjoy.
 
 
 
+
 -- cmd run function
 local function runCmd(msg)
     game.Players:Chat(msg)
@@ -182,92 +183,69 @@ wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 local isAntiJailActive = false
-local heartbeatConnection2
 
-local function monitorjailstatus()
-    if heartbeatConnection2 then
-        heartbeatConnection2:Disconnect()
-    end
-
-    heartbeatConnection2 = game:GetService("RunService").Heartbeat:Connect(function()
-        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
-            runCmd(":free me")
-            Notify(plat, "Jail cmd detected. Unjailed.")
-        end
-    end)
-end
-
-game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
-    if message:lower() == ".antijail on" then
-        if not isAntiJailActive then
-            isAntiJailActive = true
-            monitorjailstatus()
-            Notify(plat, "Anti-Jail has been enabled.")
-            print("Anti-Jail Monitoring enabled.")
-        else
-            print("Anti-Jail Monitoring is already enabled.")
-        end
-
-    elseif message:lower() == ".antijail off" then
-        if isAntiJailActive then
-            isAntiJailActive = false
-            if heartbeatConnection2 then
-                heartbeatConnection2:Disconnect()
-                heartbeatConnection2 = nil
+elseif message:lower() == ".antijail on" then
+    local function monitorjailstatus()
+        local heartbeatConnection
+        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
+                runCmd(":free me")
             end
-            Notify(plat, "Anti-Jail has been disabled.")
-            print("Anti-Jail Monitoring disabled.")
-        else
-            print("Anti-Jail Monitoring is already disabled.")
-        end
+        end)
     end
-end)
+
+    if not isAntiJailActive then
+        isAntiJailActive = true
+        monitorjailstatus()
+        Notify(plat, "Anti-Jail has been enabled.")
+        print("Anti-jail Monitoring enabled.")
+    else
+        print("Anti-jail Monitoring is already enabled.")
+    end
+
+elseif message:lower() == ".antijail off" then
+    if isAntiJailActive then
+        isAntiJailActive = false
+        Notify(plat, "Anti-Jail has been disabled.")
+        print("Anti-jail Monitoring disabled.")
+    else
+        print("Anti-jail Monitoring is already disabled.")
+    end
     
     elseif message:lower() == ".shutdown" then
         Notify(plat, "Crashing server..")
         runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
     local antifreeze = false
-    local heartbeatConnection1
-    
+
+    elseif message:lower() == ".antifreeze on" then
     local function monitorfreezep()
-        if heartbeatConnection1 then
-            heartbeatConnection1:Disconnect()
-        end
-    
+        local heartbeatConnection1
         heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
             if hrp.Anchored == true then
                 runCmd(":unfreeze me")
-                Notify(plat, "Freeze cmd detected. Unfrozen")
-            end
-        end)
-    end
-    
-    game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
-        if message:lower() == ".antifreeze on" then
-            if not antifreeze then
-                antifreeze = true
-                monitorfreezep()
-                Notify(plat, "Anti-Freeze has been enabled.")
-                print("Anti-Freeze Monitoring enabled.")
-            else
-                print("Anti-Freeze Monitoring is already enabled.")
-            end
-    
-        elseif message:lower() == ".antifreeze off" then
-            if antifreeze then
-                antifreeze = false
-                if heartbeatConnection1 then
-                    heartbeatConnection1:Disconnect()
-                    heartbeatConnection1 = nil
                 end
-                Notify(plat, "Anti-Freeze has been disabled.")
-                print("Anti-Freeze Monitoring disabled.")
-            else
-                print("Anti-Freeze Monitoring is already disabled.")
-            end
+            end)
         end
-    end)    
+    
+        if not antifreeze then
+            antifreeze = true
+            monitorfreezep()
+            Notify(plat, "Anti-Freeze has been enabled.")
+            print("Anti-Freeze Monitoring enabled.")
+        else
+            print("Anti-Freeze Monitoring is already enabled.")
+        end
+    
+    elseif message:lower() == ".antifreeze off" then
+
+    if monitorfreezep then
+        monitorfreezep = false
+        Notify(plat, "Anti-Freeze has been disabled.")
+        print("Anti-Freeze Monitoring disabled.")
+    else
+        print("Anti-Freeze Monitoring is already disabled.")
+    end
 
     elseif message:lower() == ".cmds" then
     Notify(plat, "Printed commands. Press F9 to check console.")
