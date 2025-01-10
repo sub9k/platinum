@@ -1,7 +1,7 @@
 --[[
 Platinum made by @ftsf
-Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/source"))()
-Enjoy.
+Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/source"))()
+LAST UPDATED 1/11/25
 ]]--
 
 
@@ -128,6 +128,7 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
             buildingOff = true 
             checkparts(serverEndpoint)
+            Notify(plat, "Succesfully disabled building.")
             runCmd(":setmessage [🛡️] Building has been turned off. [🛡️]")
             print("Building off mode is now active. Any new parts will be removed.")
         else
@@ -275,6 +276,7 @@ elseif message:lower() == ".antijail off" then
                 newPartConnection:Disconnect()
                 newPartConnection = nil
             end
+            runCmd(":setmessage off")
             Notify(plat, "Building has been turned on.")
             print("Building on is now active. New parts will not be automatically removed.")
         else
