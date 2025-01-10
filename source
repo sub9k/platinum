@@ -129,13 +129,15 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isAntiJailActive = false
 
 elseif message:lower() == ".antijail on" then
-    local function monitorJail()
-        game:GetService("RunService").Heartbeat:Connect(function()
-            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
-                runCmd(":free me")
-            end
-        end)
-    end
+local function monitorJail()
+    local heartbeatConnection
+    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        if game.Workspace:FindFirstChild(game.Players.LocalPlayer.Name .. "_ADONISJAIL") then
+            runCmd(":free me")
+            heartbeatConnection:Disconnect()
+        end
+    end)
+end
 
     if not isAntiJailActive then
         isAntiJailActive = true
@@ -154,6 +156,7 @@ elseif message:lower() == ".antijail off" then
     end
     
     elseif message:lower() == ".shutdown" then
+    wait(1)
         runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
 
