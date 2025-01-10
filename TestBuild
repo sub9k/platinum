@@ -1,10 +1,8 @@
 --[[
 Platinum made by @ftsf
-NOTE: THIS IS A TEST BUILD AND IT IS UNSTABLE.
-Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/TestBuild"))()
+Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/source"))()
 Enjoy.
 ]]--
-
 
 
 
@@ -118,14 +116,14 @@ local function checkparts(serverEndpoint)
 end
 
 game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
-    if message:lower() == ".pclear" or "/e .pclear" then
+    if message:lower() == ".pclear" then
         if not GiveBtools() then return end
         local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
         partclear(serverEndpoint)  --run pclear lel
         Notify(plat, "Cleared every part in the workspace..")
         runCmd(":setmessage [🛡️] Cleared every part in the workspace. [🛡️] | :wait 6 | :setmessage off")
 
-    elseif message:lower() == ".building off" or "/e .building off" then
+    elseif message:lower() == ".building off" then
         if not buildingOff then
             if not GiveBtools() then return end
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
@@ -137,7 +135,7 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
             print("Building off is already active.")
         end
 
-    elseif message:lower() == ".resetpad" or "/e .resetpad" then
+    elseif message:lower() == ".resetpad" then
 Notify(plat, "Resetting admin...")
 pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 wait(0.001)
@@ -163,7 +161,7 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28
 wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
-    elseif message:lower() == ".getadmin" or "/e .getadmin" then
+    elseif message:lower() == ".getadmin" then
 Notify(plat, "Grabbing admin...")
 pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 wait(0.001)
@@ -187,7 +185,7 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 local isAntiJailActive = false
 
-elseif message:lower() == ".antijail on" or "/e .antijail on" then
+elseif message:lower() == ".antijail on" then
     local function monitorjailstatus()
         local heartbeatConnection
         heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -207,7 +205,7 @@ elseif message:lower() == ".antijail on" or "/e .antijail on" then
         print("Anti-jail Monitoring is already enabled.")
     end
 
-elseif message:lower() == ".antijail off" or "/e .antijail off" then
+elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
         Notify(plat, "Anti-Jail has been disabled.")
@@ -216,13 +214,13 @@ elseif message:lower() == ".antijail off" or "/e .antijail off" then
         print("Anti-jail Monitoring is already disabled.")
     end
     
-    elseif message:lower() == ".shutdown" or "/e .shutdown" then
+    elseif message:lower() == ".shutdown" then
         Notify(plat, "Crashing server..")
         runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
     local antifreeze = false
 
-    elseif message:lower() == ".antifreeze on" or "/e .antifreeze on" then
+    elseif message:lower() == ".antifreeze on" then
     local function monitorfreezep()
         local heartbeatConnection
         heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -242,7 +240,7 @@ elseif message:lower() == ".antijail off" or "/e .antijail off" then
             print("Anti-Freeze Monitoring is already enabled.")
         end
     
-    elseif message:lower() == ".antifreeze off" or "/e .antifreeze off" then
+    elseif message:lower() == ".antifreeze off" then
 
     if monitorfreezep then
         monitorfreezep = false
@@ -258,7 +256,7 @@ elseif message:lower() == ".antijail off" or "/e .antijail off" then
         Notify(plat, "Printed commands. Press F9 to check console.")
     end
 
-    elseif message:lower() == ".building on" or "/e .building on" then
+    elseif message:lower() == ".building on" then
         if buildingOff then
             if not GiveBtools() then return end
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
