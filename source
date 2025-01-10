@@ -1,73 +1,57 @@
--- Command Run
+-- cmd run func (BASICALLY MAIN FUNC, DONT DEL THIS)
 local function runCmd(msg)
     game.Players:Chat(msg)
 end
 
--- Track if BuildingTools have already been given
 local bToolsGiven = false
 
--- Function to check if the player has BuildingTools
 local function checkAndGiveBTools()
     if bToolsGiven then
-        return true -- BuildingTools already given
+        return true
     end
 
-    -- Check if the player has the BuildingTools
     for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
         if tool.Name == "BuildingTools" then
-            bToolsGiven = true -- Mark as given if found
+            bToolsGiven = true
             return true
         end
     end
 
-    -- Tool not found, give the tool
     runCmd(":btools me")
     print("BuildingTools were not present. They have been given.")
     bToolsGiven = true
     return true
 end
 
--- Function to clear parts
 local function clearParts(serverEndpoint)
-    -- Create a table to store parts to be removed
     local partsToRemove = {}
 
-    -- Iterate through all descendants of the workspace
     for _, obj in ipairs(workspace:GetDescendants()) do
-        -- Check if the object is a BasePart, not locked, and not a Player's part
         if obj:IsA("BasePart") and not obj.Locked and not obj:FindFirstAncestorOfClass("Player") then
-            table.insert(partsToRemove, obj) -- Add the part to the list
+            table.insert(partsToRemove, obj)
         end
     end
 
-    -- Invoke the server once with all parts to be removed
     if #partsToRemove > 0 then
         local args = {
             [1] = "Remove",
             [2] = partsToRemove
         }
 
-        -- Call the server to delete all parts in one go
         serverEndpoint:InvokeServer(unpack(args))
     end
 end
 
--- Variables to track the "building off" state
 local buildingOff = false
 local newPartConnection
 
--- Function to monitor and delete parts as they are created
 local function monitorNewParts(serverEndpoint)
-    -- Disconnect any previous connection to avoid duplicates
     if newPartConnection then
         newPartConnection:Disconnect()
     end
 
-    -- Connect to the DescendantAdded event
     newPartConnection = workspace.DescendantAdded:Connect(function(obj)
-        -- Check if the object is a BasePart, not locked, and not a Player's part
         if obj:IsA("BasePart") and not obj.Locked and not obj:FindFirstAncestorOfClass("Player") then
-            -- Remove the part immediately by invoking the server
             local args = {
                 [1] = "Remove",
                 [2] = { obj }
@@ -77,34 +61,107 @@ local function monitorNewParts(serverEndpoint)
     end)
 end
 
--- Listen for chat messages
 game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
-    -- Check for .pclear command
     if message:lower() == ".pclear" then
         if not checkAndGiveBTools() then return end
         local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-        clearParts(serverEndpoint)  -- Run the clear parts function
+        clearParts(serverEndpoint)  --run clearparts lel
 
-    -- Check for .building off command
     elseif message:lower() == ".building off" then
         if not buildingOff then
             if not checkAndGiveBTools() then return end
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-            buildingOff = true  -- Enable "building off" mode
-            monitorNewParts(serverEndpoint)   -- Start monitoring for new parts
+            buildingOff = true 
+            monitorNewParts(serverEndpoint)
             print("Building off mode is now active. Any new parts will be removed.")
         else
             print("Building off is already active.")
         end
 
-    -- Check for .building on command
+    elseif message:lower() == ".resetpad" then
+pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+wait(0.001)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(23,28,106)
+wait(0.3)
+fireclickdetector(game.Workspace.SecureParts.ResetPads.ClickDetector)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(14,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(10,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10.3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+
+    elseif message:lower() == ".getadmin" then
+pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+wait(0.001)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(14,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(10,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10.3,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28.2,106.2)
+wait(0.1)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+
+local isAntiJailActive = false
+
+elseif message:lower() == ".antijail on" then
+    local function monitorJail()
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
+                runCmd(":free me")
+            end
+        end)
+    end
+
+    if not isAntiJailActive then
+        isAntiJailActive = true
+        monitorJail()
+        print("Anti-jail Monitoring enabled.")
+    else
+        print("Anti-jail Monitoring is already enabled.")
+    end
+
+elseif message:lower() == ".antijail off" then
+    if isAntiJailActive then
+        isAntiJailActive = false
+        print("Anti-jail Monitoring disabled.")
+    else
+        print("Anti-jail Monitoring is already disabled.")
+    end
+    
+    elseif message:lower() == ".shutdown" then
+        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
+
+
     elseif message:lower() == ".building on" then
         if buildingOff then
             if not checkAndGiveBTools() then return end
             local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-            buildingOff = false  -- Disable "building off" mode
+            buildingOff = false
             if newPartConnection then
-                newPartConnection:Disconnect() -- Stop monitoring for new parts
+                newPartConnection:Disconnect()
                 newPartConnection = nil
             end
             print("Building on mode is now active. New parts will not be automatically removed.")
