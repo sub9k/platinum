@@ -1,9 +1,10 @@
 --[[
 Platinum made by @ftsf
-NOTE: THIS IS A TEST BUILD, IT MAY OR MAY NOT WORK.
+NOTE: THIS IS A TEST BUILD AND IT IS UNSTABLE.
 Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/TestBuild"))()
 Enjoy.
 ]]--
+
 
 
 
