@@ -35,9 +35,16 @@ end
 
 wait(0.5)
 
+local platloaded
+
+if platloaded == true then
+    Notify(plat, "Platinum has already been loaded.")
+end
+
 local plat = "[🛡️] Platinum [🛡️]"
 
 Notify(plat, "Intialized.")
+platloaded = true
 
 local commands = {
     [".cmds"] = "Views the concurrent commands for platinum.",
@@ -221,7 +228,8 @@ elseif message:lower() == ".antijail off" then
     
     elseif message:lower() == ".shutdown" then
         Notify(plat, "Crashing server..")
-        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true | :chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
+        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true")
+        runCmd(":chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
 
     local antifreeze = false
     local isFrozen = false
