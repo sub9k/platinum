@@ -1,7 +1,7 @@
 --[[
 Platinum made by @ftsf
 Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/source"))()
-Enjoy.
+LAST UPDATED 3/11/25
 ]]--
 
 
@@ -195,21 +195,22 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 local isAntiJailActive = false
 local isUnjailing = false
+local heartbeatConnection
 
-elseif message:lower() == ".antijail on" then
 local function monitorjailstatus()
-    local heartbeatConnection
-    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
-            isUnjailing = true
-            runCmd(":free me")
-            heartbeatConnection:Disconnect()
-            isUnjailing = false
-            monitorjailstatus()
-        end
-    end)
+    if not heartbeatConnection then
+        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
+                isUnjailing = true
+                runCmd(":free me")
+                wait(0.01)
+                isUnjailing = false
+            end
+        end)
+    end
 end
 
+if message:lower() == ".antijail on" then
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorjailstatus()
@@ -222,12 +223,17 @@ end
 elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
+        if heartbeatConnection then
+            heartbeatConnection:Disconnect()
+            heartbeatConnection = nil
+        end
         isUnjailing = false
         Notify(plat, "Anti-Jail has been disabled.")
         print("Anti-jail Monitoring disabled.")
     else
         print("Anti-jail Monitoring is already disabled.")
     end
+end
     
     elseif message:lower() == ".shutdown" then
         Notify(plat, "Crashing server..")
