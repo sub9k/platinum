@@ -35,16 +35,19 @@ end
 
 wait(0.5)
 
-local platloaded
-
-if platloaded == true then
-    Notify(plat, "Platinum has already been loaded.")
+if not _G.platloaded then
+    _G.platloaded = false
 end
 
-local plat = "[🛡️] Platinum [🛡️]"
+if _G.platloaded then
+    Notify("[🛡️] Platinum [🛡️]", "Platinum has already been loaded.")
+    return
+end
 
-Notify(plat, "Intialized.")
-platloaded = true
+_G.platloaded = true
+
+local plat = "[🛡️] Platinum [🛡️]"
+Notify(plat, "Initialized.")
 
 local commands = {
     [".cmds"] = "Views the concurrent commands for platinum.",
