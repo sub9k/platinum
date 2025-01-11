@@ -1,5 +1,5 @@
 --[[
-Platinum made by @ftsf
+Platinum made by UNKNOWN
 Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/source"))()
 LAST UPDATED 3/11/25
 ]]--
@@ -56,7 +56,7 @@ local commands = {
     [".getadmin"] = "Teleports to the admin pads then teleports you back to your original position.",
     [".antijail on"] = "Auotmatically Unjails you when jailed.",
     [".antijail off"] = "Disables anti-jail protection.",
-    [".shutdown"] = "Crashes the server.",
+    [".shutdown reason"] = "Crashes the server.",
     [".antifreeze on"] = "Automatically Unfreezes urself when frozen.",
     [".antifreeze off"] = "Disables anti-freeze protection.",
     [".building off"] = "Disables building.",
@@ -172,7 +172,7 @@ wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
     elseif message:lower() == ".getadmin" then
-Notify(plat, "Grabbing admin...")
+Notify(plat, "Getting admin...")
 pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 wait(0.001)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6.5,28.3,106.9)
@@ -235,10 +235,12 @@ elseif message:lower() == ".antijail off" then
     end
 end
     
-    elseif message:lower() == ".shutdown" then
+    elseif message:lower() == ".shutdown and then the reason" then
+        local reason = message:sub(11):gsub("^%s*(.-)%s*$", "%1")
+        if reason == "" then reason = "No reason provided." end
         Notify(plat, "Crashing server..")
-        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true")
-        runCmd(":chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to severe abuse. | :wait 0.5 | :setanchored 590 false")
+        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590  | :clonepart 590 590  | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true")
+        runCmd(":chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to: | :chatnotifyc all 200,200,200 " .. reason .." | :wait 0.5 | :setanchored 590 false")
 
     local antifreeze = false
     local isFrozen = false
