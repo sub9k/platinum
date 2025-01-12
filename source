@@ -195,32 +195,20 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 local isAntiJailActive = false
 local isUnjailing = false
-local lastJail = nil
 
+elseif message:lower() == ".antijail on" then
 local function monitorjailstatus()
     local heartbeatConnection
     heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        local jailObject = game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL")
-        
-        -- Check if you're jailed and it's not the same instance of being jailed
-        if jailObject and not isUnjailing and jailObject ~= lastJail then
-            -- Trigger unjail logic
+        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
             isUnjailing = true
-            runCmd(":free me")  -- Run the unjail command
-            print("Unjailing...")
-
-            -- Remember the jail object to prevent re-triggering until next jail
-            lastJail = jailObject
-
-            -- Disconnect after unjailing to stop continuous checks
+            runCmd(":free me")  -- unjail
             heartbeatConnection:Disconnect()
-            isUnjailing = false
         end
     end)
 end
 
--- Command logic
-if message:lower() == ".antijail on" then
+
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorjailstatus()
@@ -234,14 +222,12 @@ elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
         isUnjailing = false
-        lastJail = nil
         Notify(plat, "Anti-Jail has been disabled.")
         print("Anti-jail Monitoring disabled.")
     else
         print("Anti-jail Monitoring is already disabled.")
     end
-end
-
+    
     elseif message:lower():sub(1, 9) == ".shutdown" then 
         local reason = message:sub(11):gsub("^%s*(.-)%s*$", "%1")
         if reason == "" then reason = "No reason provided" end
