@@ -195,22 +195,19 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 local isAntiJailActive = false
 local isUnjailing = false
-local heartbeatConnection
 
 local function monitorjailstatus()
-    if not heartbeatConnection then
-        heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
-                isUnjailing = true
-                runCmd(":free me")
-                wait(0.01)
-                isUnjailing = false
-            end
-        end)
-    end
+    local heartbeatConnection
+    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
+            isUnjailing = true
+            runCmd(":free me")
+            heartbeatConnection:Disconnect()
+            isUnjailing = false
+        end
+    end)
 end
 
-if message:lower() == ".antijail on" then
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorjailstatus()
@@ -223,24 +220,19 @@ if message:lower() == ".antijail on" then
 elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
-        if heartbeatConnection then
-            heartbeatConnection:Disconnect()
-            heartbeatConnection = nil
-        end
         isUnjailing = false
         Notify(plat, "Anti-Jail has been disabled.")
         print("Anti-jail Monitoring disabled.")
     else
         print("Anti-jail Monitoring is already disabled.")
     end
-end
     
-    elseif message:lower() == ".shutdown and then the reason" then
+    elseif message:lower():sub(1, 9) == ".shutdown" then 
         local reason = message:sub(11):gsub("^%s*(.-)%s*$", "%1")
-        if reason == "" then reason = "No reason provided." end
+        if reason == "" then reason = "No reason provided" end
         Notify(plat, "Crashing server..")
-        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590  | :clonepart 590 590  | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true")
-        runCmd(":chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to: | :chatnotifyc all 200,200,200 " .. reason .." | :wait 0.5 | :setanchored 590 false")
+        runCmd(":tpbackward me 500 | :skydive me -450 | :wait 0.3 | :freeze me | :wait 0.2 | :makepart 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :clonepart 590 590 | :wait 0.8 | :clearguis others true")
+        runCmd(":chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ | :chatnotifyc all 200,200,200 This server has been shutdown due to: | :chatnotifyc all 200,200,200 " .. reason .. " | :wait 0.3 | :setanchored 590 false")
 
     local antifreeze = false
     local isFrozen = false
