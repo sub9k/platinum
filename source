@@ -203,7 +203,7 @@ local function monitorjailstatus()
         if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
             isUnjailing = true
             runCmd(":free me")  -- unjail
-            wait(0.01)
+            wait(1.7)
             isUnjailing = false 
         end
     end)
