@@ -60,7 +60,8 @@ local commands = {
     [".antifreeze on"] = "Automatically Unfreezes urself when frozen.",
     [".antifreeze off"] = "Disables anti-freeze protection.",
     [".building off"] = "Disables building.",
-    [".building on"] = "Re-enables building."
+    [".building on"] = "Re-enables building.",
+    [".destruct"] = "Destructs script, making any cmds unusable."
 }
 
 local LocalPlayer = game.Players.LocalPlayer
@@ -196,21 +197,20 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isAntiJailActive = false
 local isUnjailing = false
 
+elseif message:lower() == ".antijail on" then
 local function monitorjailstatus()
     local heartbeatConnection
     heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        local jailedObject = game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL")
-        if isAntiJailActive and jailedObject and not isUnjailing then
+        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
             isUnjailing = true
-            runCmd(":free me")
-        end
-        if not jailedObject and isUnjailing then
-            isUnjailing = false
+            runCmd(":free me")  -- unjail
+            wait(1.7)
+            isUnjailing = false 
         end
     end)
 end
 
-if message:lower() == ".antijail on" then
+
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorjailstatus()
@@ -229,7 +229,6 @@ elseif message:lower() == ".antijail off" then
     else
         print("Anti-jail Monitoring is already disabled.")
     end
-end
     
     elseif message:lower():sub(1, 9) == ".shutdown" then 
         local reason = message:sub(11):gsub("^%s*(.-)%s*$", "%1")
@@ -283,20 +282,27 @@ end
     print("------------------------------------------------------------------")
     end
 
-    elseif message:lower() == ".building on" then
-        if buildingOff then
-            if not GiveBtools() then return end
-            local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
-            buildingOff = false
-            if newPartConnection then
-                newPartConnection:Disconnect()
-                newPartConnection = nil
-            end
-            runCmd(":setmessage off")
-            Notify(plat, "Building has been turned on.")
-            print("Building on is now active. New parts will not be automatically removed.")
-        else
-            print("Building on is already active.")
+elseif message:lower() == ".building on" then
+    if buildingOff then
+        if not GiveBtools() then return end
+        local serverEndpoint = game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Folder"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint")
+        buildingOff = false
+        if newPartConnection then
+            newPartConnection:Disconnect()
+            newPartConnection = nil
+        end
+        runCmd(":setmessage off")
+        Notify(plat, "Building has been turned on.")
+        print("Building on is now active. New parts will not be automatically removed.")
+    else
+        print("Building on is already active.")
+    end
+
+    elseif message:lower() == ".destruct" then
+        Notify(plat, "Destroying script...")
+        wait(0.5)
+        for k in pairs(getfenv()) do
+            getfenv()[k] = nil
         end
     end
 end)
