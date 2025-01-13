@@ -60,8 +60,7 @@ local commands = {
     [".antifreeze on"] = "Automatically Unfreezes urself when frozen.",
     [".antifreeze off"] = "Disables anti-freeze protection.",
     [".building off"] = "Disables building.",
-    [".building on"] = "Re-enables building.",
-    [".destruct"] = "Destructs script, making any cmds unusable."
+    [".building on"] = "Re-enables building."
 }
 
 local LocalPlayer = game.Players.LocalPlayer
@@ -197,20 +196,21 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isAntiJailActive = false
 local isUnjailing = false
 
-elseif message:lower() == ".antijail on" then
 local function monitorjailstatus()
     local heartbeatConnection
     heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
+        local jailedObject = game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL")
+        if isAntiJailActive and jailedObject and not isUnjailing then
             isUnjailing = true
-            runCmd(":free me")  -- unjail
-            wait(1.7)
-            isUnjailing = false 
+            runCmd(":free me")
+        end
+        if not jailedObject and isUnjailing then
+            isUnjailing = false
         end
     end)
 end
 
-
+if message:lower() == ".antijail on" then
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorjailstatus()
@@ -229,6 +229,7 @@ elseif message:lower() == ".antijail off" then
     else
         print("Anti-jail Monitoring is already disabled.")
     end
+end
     
     elseif message:lower():sub(1, 9) == ".shutdown" then 
         local reason = message:sub(11):gsub("^%s*(.-)%s*$", "%1")
@@ -298,11 +299,47 @@ elseif message:lower() == ".building on" then
         print("Building on is already active.")
     end
 
-    elseif message:lower() == ".destruct" then
-        Notify(plat, "Destroying script...")
-        wait(0.5)
-        for k in pairs(getfenv()) do
-            getfenv()[k] = nil
+elseif message:lower() == ".destruct" then
+    Notify(plat, "Destroying script...")
+    wait(0.5)
+
+    for k in pairs(getfenv()) do
+        getfenv()[k] = nil
+    end
+
+    for k, v in pairs(_G) do
+        if type(v) == "function" or type(v) == "table" then
+            _G[k] = nil
         end
     end
+
+    for _, thread in ipairs(debug.getregistry()) do
+        if type(thread) == "thread" and coroutine.status(thread) ~= "dead" then
+            coroutine.close(thread)
+        end
+    end
+
+    local RunService = game:GetService("RunService")
+    for _, connection in pairs(RunService:GetConnections()) do
+        connection:Disconnect()
+    end
+
+    local Heartbeat = RunService.Heartbeat
+    local Stepped = RunService.Stepped
+    local RenderStepped = RunService.RenderStepped
+
+    for _, signal in ipairs({Heartbeat, Stepped, RenderStepped}) do
+        for _, connection in pairs(signal:GetConnections()) do
+            connection:Disconnect()
+        end
+    end
+
+    for k, v in pairs(debug.getregistry()) do
+        if type(v) == "function" or type(v) == "userdata" then
+            debug.setmetatable(v, nil)
+        end
+    end
+
+    collectgarbage()
+end
 end)
