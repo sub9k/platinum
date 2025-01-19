@@ -418,4 +418,5 @@ elseif message:lower() == ".destruct" then
 
     collectgarbage()
 end
+end
 end)
