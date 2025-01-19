@@ -1,7 +1,7 @@
 --[[
-Platinum made by UNKNOWN (hahahah secret)
+Platinum made by UNKNOWN
 Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/source"))()
-LAST UPDATED 1/19/25
+LAST UPDATED 3/11/25
 ]]--
 
 
@@ -203,63 +203,22 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local isAntiJailActive = false
-local isUnjailing = false
-local heartbeatConnection
+local antiJailActive = false
 
-local LocalPlayer = game:GetService("Players").LocalPlayer
-if not LocalPlayer then
-    error("LocalPlayer is not defined.")
-end
-
-local function monitorJailStatus()
-    if heartbeatConnection then return end
-
-    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        local jailedObject = game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL")
-
-        if isAntiJailActive and jailedObject and not isUnjailing then
-            isUnjailing = true
+function antijailfunc()
+    antiJailActive = true
+    while antiJailActive do
+        if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") then
             runCmd(":free me")
         end
-
-        if not jailedObject and isUnjailing then
-            isUnjailing = false
-        end
-    end)
-end
-
-local function disableMonitoring()
-    if heartbeatConnection then
-        heartbeatConnection:Disconnect()
-        heartbeatConnection = nil
+        wait(1.7)
     end
 end
 
 if message:lower() == ".antijail on" then
-    if not isAntiJailActive then
-        isAntiJailActive = true
-        monitorJailStatus()
-        if Notify then
-            Notify(plat, "Anti-Jail has been enabled.")
-        end
-        print("Anti-jail Monitoring enabled.")
-    else
-        print("Anti-jail Monitoring is already enabled.")
-    end
-
+    antijailfunc()
 elseif message:lower() == ".antijail off" then
-    if isAntiJailActive then
-        isAntiJailActive = false
-        isUnjailing = false
-        disableMonitoring()
-        if Notify then
-            Notify(plat, "Anti-Jail has been disabled.")
-        end
-        print("Anti-jail Monitoring disabled.")
-    else
-        print("Anti-jail Monitoring is already disabled.")
-    end
+    antiJailActive = false
 end
     
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -278,30 +237,22 @@ local antifreeze = false
 local isFrozen = false
 local heartbeatConnection1
 
--- Ensure LocalPlayer and HumanoidRootPart are defined
-local LocalPlayer = game:GetService("Players").LocalPlayer
-if not LocalPlayer then
-    error("LocalPlayer is not defined.")
-end
-
-if not hrp then
-    error("HumanoidRootPart is not found.")
-end
-
 local function monitorFreeze()
-    if heartbeatConnection1 then return end -- Prevent multiple connections
+    if heartbeatConnection1 then return end
 
     heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
-        if hrp.Anchored == true and not isFrozen then
-            runCmd(":thaw me")
-            isFrozen = true
-        elseif hrp.Anchored == false then
-            isFrozen = false
+        if hrp then
+            if hrp.Anchored == true and not isFrozen then
+                runCmd(":thaw me")
+                isFrozen = true
+            elseif hrp.Anchored == false then
+                isFrozen = false
+            end
         end
     end)
 end
 
-local function disableFreezeMonitoring()
+local function stopMonitoringFreeze()
     if heartbeatConnection1 then
         heartbeatConnection1:Disconnect()
         heartbeatConnection1 = nil
@@ -312,9 +263,7 @@ if message:lower() == ".antifreeze on" then
     if not antifreeze then
         antifreeze = true
         monitorFreeze()
-        if Notify then
-            Notify(plat, "Anti-Freeze has been enabled.")
-        end
+        Notify(plat, "Anti-Freeze has been enabled.")
         print("Anti-Freeze Monitoring enabled.")
     else
         print("Anti-Freeze Monitoring is already enabled.")
@@ -323,10 +272,9 @@ if message:lower() == ".antifreeze on" then
 elseif message:lower() == ".antifreeze off" then
     if antifreeze then
         antifreeze = false
-        disableFreezeMonitoring()
-        if Notify then
-            Notify(plat, "Anti-Freeze has been disabled.")
-        end
+        isFrozen = false
+        stopMonitoringFreeze()
+        Notify(plat, "Anti-Freeze has been disabled.")
         print("Anti-Freeze Monitoring disabled.")
     else
         print("Anti-Freeze Monitoring is already disabled.")
