@@ -1,7 +1,7 @@
 --[[
 Platinum made by UNKNOWN
 Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/source"))()
-LAST UPDATED 3/11/25
+LAST UPDATED 1/19/25
 ]]--
 
 
@@ -124,6 +124,8 @@ local function checkparts(serverEndpoint)
     end)
 end
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
     if message:lower() == ".pclear" then
         if not GiveBtools() then return end
@@ -131,6 +133,8 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
         partclear(serverEndpoint)  --run pclear lel
         Notify(plat, "Cleared every part in the workspace..")
         runCmd(":setmessage [🛡️] Cleared every part in the workspace. [🛡️] | :wait 6 | :setmessage off")
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     elseif message:lower() == ".building off" then
         if not buildingOff then
@@ -144,6 +148,8 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(function(message)
         else
             print("Building off is already active.")
         end
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     elseif message:lower() == ".resetpad" then
 Notify(plat, "Resetting admin...")
@@ -171,6 +177,8 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28
 wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     elseif message:lower() == ".getadmin" then
 Notify(plat, "Getting admin...")
 pos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -193,28 +201,48 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-14.5,28
 wait(0.1)
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local isAntiJailActive = false
 local isUnjailing = false
+local heartbeatConnection
 
-local function monitorjailstatus()
-    local heartbeatConnection
+local LocalPlayer = game:GetService("Players").LocalPlayer
+if not LocalPlayer then
+    error("LocalPlayer is not defined.")
+end
+
+local function monitorJailStatus()
+    if heartbeatConnection then return end
+
     heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
         local jailedObject = game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL")
+
         if isAntiJailActive and jailedObject and not isUnjailing then
             isUnjailing = true
             runCmd(":free me")
         end
+
         if not jailedObject and isUnjailing then
             isUnjailing = false
         end
     end)
 end
 
+local function disableMonitoring()
+    if heartbeatConnection then
+        heartbeatConnection:Disconnect()
+        heartbeatConnection = nil
+    end
+end
+
 if message:lower() == ".antijail on" then
     if not isAntiJailActive then
         isAntiJailActive = true
-        monitorjailstatus()
-        Notify(plat, "Anti-Jail has been enabled.")
+        monitorJailStatus()
+        if Notify then
+            Notify(plat, "Anti-Jail has been enabled.")
+        end
         print("Anti-jail Monitoring enabled.")
     else
         print("Anti-jail Monitoring is already enabled.")
@@ -224,13 +252,18 @@ elseif message:lower() == ".antijail off" then
     if isAntiJailActive then
         isAntiJailActive = false
         isUnjailing = false
-        Notify(plat, "Anti-Jail has been disabled.")
+        disableMonitoring()
+        if Notify then
+            Notify(plat, "Anti-Jail has been disabled.")
+        end
         print("Anti-jail Monitoring disabled.")
     else
         print("Anti-jail Monitoring is already disabled.")
     end
 end
     
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     elseif message:lower():sub(1, 9) == ".shutdown" then 
         local reason = message:sub(11):gsub("^%s*(.-)%s*$", "%1")
         if reason == "" then reason = "No reason provided" end
@@ -239,41 +272,68 @@ end
         runCmd(":chatnotifyc all 200,200,200                          🛡️ Platinum 🛡️ ")
         runCmd(":chatnotifyc all 200,200,200 This server has been shutdown due to: | :chatnotifyc all 200,200,200 " .. reason .. " | :wait 0.3 | :setanchored 590 false")
 
-    local antifreeze = false
-    local isFrozen = false
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    elseif message:lower() == ".antifreeze on" then
-        local function monitorfreezep()
-            local heartbeatConnection1
-            heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
-                if hrp.Anchored == true and not isFrozen then
-                    runCmd(":thaw me")
-                    isFrozen = true
-                elseif hrp.Anchored == false then
-                    isFrozen = false
-                end
-            end)
+local antifreeze = false
+local isFrozen = false
+local heartbeatConnection1
+
+-- Ensure LocalPlayer and HumanoidRootPart are defined
+local LocalPlayer = game:GetService("Players").LocalPlayer
+if not LocalPlayer then
+    error("LocalPlayer is not defined.")
+end
+
+if not hrp then
+    error("HumanoidRootPart is not found.")
+end
+
+local function monitorFreeze()
+    if heartbeatConnection1 then return end -- Prevent multiple connections
+
+    heartbeatConnection1 = game:GetService("RunService").Heartbeat:Connect(function()
+        if hrp.Anchored == true and not isFrozen then
+            runCmd(":thaw me")
+            isFrozen = true
+        elseif hrp.Anchored == false then
+            isFrozen = false
         end
-    
-        if not antifreeze then
-            antifreeze = true
-            monitorfreezep()
+    end)
+end
+
+local function disableFreezeMonitoring()
+    if heartbeatConnection1 then
+        heartbeatConnection1:Disconnect()
+        heartbeatConnection1 = nil
+    end
+end
+
+if message:lower() == ".antifreeze on" then
+    if not antifreeze then
+        antifreeze = true
+        monitorFreeze()
+        if Notify then
             Notify(plat, "Anti-Freeze has been enabled.")
-            print("Anti-Freeze Monitoring enabled.")
-        else
-            print("Anti-Freeze Monitoring is already enabled.")
         end
-    
-    elseif message:lower() == ".antifreeze off" then
+        print("Anti-Freeze Monitoring enabled.")
+    else
+        print("Anti-Freeze Monitoring is already enabled.")
+    end
 
-    if monitorfreezep then
-        monitorfreezep = false
-        local antifreeze = false
-        Notify(plat, "Anti-Freeze has been disabled.")
+elseif message:lower() == ".antifreeze off" then
+    if antifreeze then
+        antifreeze = false
+        disableFreezeMonitoring()
+        if Notify then
+            Notify(plat, "Anti-Freeze has been disabled.")
+        end
         print("Anti-Freeze Monitoring disabled.")
     else
         print("Anti-Freeze Monitoring is already disabled.")
     end
+end
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     elseif message:lower() == ".cmds" then
     Notify(plat, "Printed commands. Press F9 to check console.")
@@ -282,6 +342,8 @@ end
         print(command .. "  " .. description)
     print("------------------------------------------------------------------")
     end
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 elseif message:lower() == ".building on" then
     if buildingOff then
@@ -299,9 +361,57 @@ elseif message:lower() == ".building on" then
         print("Building on is already active.")
     end
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+elseif message:lower() == ".dump" then
+local function generateRandomString(length)
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    local result = ""
+    for _ = 1, length do
+        local randomIndex = math.random(1, #chars)
+        result = result .. chars:sub(randomIndex, randomIndex)
+    end
+    return result
+end
+
+local randomName = "dump-" .. generateRandomString(5)
+
+local partsToSave = {}
+
+for _, descendant in ipairs(workspace:GetDescendants()) do
+    if descendant:IsA("BasePart") and not descendant.Locked then
+        local ancestor = descendant:FindFirstAncestorWhichIsA("Model")
+        if not ancestor or not game.Players:GetPlayerFromCharacter(ancestor) then
+            table.insert(partsToSave, descendant)
+        end
+    end
+end
+
+print("Starting save process. Saving as:", randomName)
+
+local args = {
+    [1] = {
+        [1] = "SAVE",
+        [2] = randomName,
+        [3] = partsToSave
+    }
+}
+
+local success, result = pcall(function()
+    return game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("BuildSaving"):InvokeServer(unpack(args))
+end)
+
+if success then
+    print("Save process completed successfully.")
+else
+    print("Save process failed:", result)
+end
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 elseif message:lower() == ".destruct" then
-    Notify(plat, "Destroying script...")
-    wait(0.5)
+    Notify(plat, "Destroying script... Please wait untill this notification dissapears")
+    wait(5.5)
 
     for k in pairs(getfenv()) do
         getfenv()[k] = nil
