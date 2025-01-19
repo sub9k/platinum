@@ -206,7 +206,7 @@ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 local isUnjailing = false
 local isAntiJailActive = false
 
-function monitorjailstatus()
+local function monitorjailstatus()
     local heartbeatConnection
     heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
         if game.Workspace:FindFirstChild(LocalPlayer.Name .. "_ADONISJAIL") and not isUnjailing then
@@ -219,7 +219,7 @@ function monitorjailstatus()
     end)
 end
 
-elseif message:lower() == ".antijail on" then
+if message:lower() == ".antijail on" then
     if not isAntiJailActive then
         isAntiJailActive = true
         monitorjailstatus()
