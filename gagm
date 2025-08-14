@@ -1,0 +1,124 @@
+-- Load Kavo UI Library
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Egg Automation Script", "DarkTheme")
+
+-- Create Egg Automation Tab & Section
+local EggTab = Window:NewTab("Egg Automation")
+local EggSection = EggTab:NewSection("Auto Egg Process")
+
+-- State variables
+local autoEgg = false
+local selectedEgg = nil
+
+-- Notification function
+local function notify(msg)
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Egg Automation",
+            Text = msg,
+            Duration = 2
+        })
+    end)
+end
+
+-- Function to get eggs from Backpack (excluding "Easter Egg Seed")
+local function getEggList()
+    local eggs = {}
+    local backpack = game.Players.LocalPlayer:WaitForChild("Backpack")
+
+    for _, tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name:find("Egg") and tool.Name ~= "Easter Egg Seed" then
+            table.insert(eggs, tool.Name)
+        end
+    end
+
+    return eggs
+end
+
+-- Create dropdown with current eggs
+local EggDropdown = EggSection:NewDropdown("Select Egg", "Choose an egg from your backpack", getEggList(), function(option)
+    selectedEgg = option
+end)
+
+-- Auto-update dropdown every 3 seconds
+task.spawn(function()
+    while task.wait(3) do
+        EggDropdown:Refresh(getEggList())
+    end
+end)
+
+-- Function to get all PetEgg objects in the workspace
+local function getPetEggs()
+    local eggs = {}
+    local farmPath = workspace:WaitForChild("Farm"):WaitForChild("Farm"):WaitForChild("Important"):WaitForChild("Objects_Physical")
+    for _, obj in ipairs(farmPath:GetChildren()) do
+        if obj.Name == "PetEgg" then
+            table.insert(eggs, obj)
+        end
+    end
+    return eggs
+end
+
+-- Equip tool
+local function equipTool(toolName)
+    local player = game.Players.LocalPlayer
+    local backpack = player:WaitForChild("Backpack")
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    local tool = backpack:FindFirstChild(toolName)
+    if tool then
+        tool.Parent = character
+    end
+end
+
+-- Toggle logic
+EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg", function(state)
+    autoEgg = state
+
+    if autoEgg and selectedEgg then
+        task.spawn(function()
+            notify("Equipping: " .. selectedEgg)
+            equipTool(selectedEgg)
+
+            -- Step 1: CreateEgg 8 times
+            for i = 1, 8 do
+                local args = {
+                    "CreateEgg",
+                    vector.create(60.230186462402344, 0.1754859983921051, -112.32734680175781)
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService"):FireServer(unpack(args))
+                task.wait(0.1)
+            end
+            notify("Created 8 eggs")
+
+            -- Step 2: AuthorisePurchase for each PetEgg
+            local petEggs = getPetEggs()
+            for _, egg in ipairs(petEggs) do
+                local args = {
+                    "AuthorisePurchase",
+                    egg
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService"):FireServer(unpack(args))
+                task.wait(0.1)
+            end
+            notify("Authorised " .. #petEggs .. " eggs")
+
+            -- Step 3: HatchPet for each PetEgg
+            petEggs = getPetEggs()
+            for _, egg in ipairs(petEggs) do
+                local args = {
+                    "HatchPet",
+                    egg
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService"):FireServer(unpack(args))
+                task.wait(0.1)
+            end
+            notify("Hatched " .. #petEggs .. " eggs")
+
+            autoEgg = false -- stop after one run
+        end)
+    elseif autoEgg and not selectedEgg then
+        notify("No egg selected!")
+        autoEgg = false
+    end
+end)
