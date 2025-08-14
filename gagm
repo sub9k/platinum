@@ -8,7 +8,7 @@ local EggSection = EggTab:NewSection("Auto Egg Process")
 
 -- State variables
 local autoEgg = false
-local selectedEgg = "Zen Egg" -- fixed name
+local selectedEgg = nil
 
 -- Notification function
 local function notify(msg)
@@ -21,25 +21,73 @@ local function notify(msg)
     end)
 end
 
--- Toggle logic
-EggSection:NewDropdown("Select Egg", "Select the egg to automate", {"Zen Egg"}, function(option)
+-- Equip tool function
+local function equipEgg(namePart)
+    local player = game.Players.LocalPlayer
+    local backpack = player:WaitForChild("Backpack")
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    -- Find any tool that contains the egg name
+    local tool
+    for _, t in ipairs(backpack:GetChildren()) do
+        if t:IsA("Tool") and t.Name:find(namePart) then
+            tool = t
+            break
+        end
+    end
+
+    if tool then
+        tool.Parent = character -- move to character
+        character:WaitForChild("Humanoid"):EquipTool(tool) -- equip
+        return true
+    end
+    return false
+end
+
+-- Function to get eggs from Backpack
+local function getEggs()
+    local player = game.Players.LocalPlayer
+    local backpack = player:WaitForChild("Backpack")
+    local eggs = {}
+
+    for _, tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            local name = tool.Name
+            if name:find("Egg") and not name:find("Easter Egg seed") then
+                table.insert(eggs, name)
+            end
+        end
+    end
+
+    return eggs
+end
+
+-- Create dropdown dynamically
+local eggDropdown = EggSection:NewDropdown("Select Egg", "Select an egg to automate", getEggs(), function(option)
     selectedEgg = option
 end)
 
+-- Optional: refresh dropdown when UI opens
+eggDropdown:Refresh(getEggs())
+
+-- Toggle for automation
 EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg continuously", function(state)
     autoEgg = state
 
     task.spawn(function()
         while autoEgg do
-            notify("Equipping: " .. selectedEgg)
-            -- Equip tool
-            local player = game.Players.LocalPlayer
-            local backpack = player:WaitForChild("Backpack")
-            local character = player.Character or player.CharacterAdded:Wait()
+            if not selectedEgg then
+                notify("No egg selected!")
+                task.wait(2)
+                continue
+            end
 
-            local tool = backpack:FindFirstChild(selectedEgg)
-            if tool then
-                tool.Parent = character
+            -- Equip selected egg
+            notify("Equipping: " .. selectedEgg)
+            if not equipEgg(selectedEgg) then
+                notify("Could not find " .. selectedEgg .. " in Backpack!")
+                task.wait(2)
+                continue
             end
 
             -- Step 1: CreateEgg 8 times
@@ -83,7 +131,8 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
             end
             notify("Hatched " .. #petEggs .. " eggs")
 
-            task.wait(1) -- small wait before next loop
+            task.wait(1) -- wait before next loop
         end
+        notify("Egg Automation stopped")
     end)
 end)
