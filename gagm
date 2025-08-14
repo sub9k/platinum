@@ -8,7 +8,7 @@ local EggSection = EggTab:NewSection("Auto Egg Process")
 
 -- State variables
 local autoEgg = false
-local selectedEgg = nil
+local selectedEgg = "Zen Egg" -- fixed name
 
 -- Notification function
 local function notify(msg)
@@ -21,64 +21,26 @@ local function notify(msg)
     end)
 end
 
--- Function to get eggs from Backpack (excluding "Easter Egg Seed")
-local function getEggList()
-    local eggs = {}
-    local backpack = game.Players.LocalPlayer:WaitForChild("Backpack")
-
-    for _, tool in ipairs(backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:find("Egg") and tool.Name ~= "Easter Egg Seed" then
-            table.insert(eggs, tool.Name)
-        end
-    end
-
-    return eggs
-end
-
--- Create dropdown with current eggs
-local EggDropdown = EggSection:NewDropdown("Select Egg", "Choose an egg from your backpack", getEggList(), function(option)
+-- Toggle logic
+EggSection:NewDropdown("Select Egg", "Select the egg to automate", {"Zen Egg"}, function(option)
     selectedEgg = option
 end)
 
--- Auto-update dropdown every 3 seconds
-task.spawn(function()
-    while task.wait(3) do
-        EggDropdown:Refresh(getEggList())
-    end
-end)
-
--- Function to get all PetEgg objects in the workspace
-local function getPetEggs()
-    local eggs = {}
-    local farmPath = workspace:WaitForChild("Farm"):WaitForChild("Farm"):WaitForChild("Important"):WaitForChild("Objects_Physical")
-    for _, obj in ipairs(farmPath:GetChildren()) do
-        if obj.Name == "PetEgg" then
-            table.insert(eggs, obj)
-        end
-    end
-    return eggs
-end
-
--- Equip tool
-local function equipTool(toolName)
-    local player = game.Players.LocalPlayer
-    local backpack = player:WaitForChild("Backpack")
-    local character = player.Character or player.CharacterAdded:Wait()
-
-    local tool = backpack:FindFirstChild(toolName)
-    if tool then
-        tool.Parent = character
-    end
-end
-
--- Toggle logic
-EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg", function(state)
+EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg continuously", function(state)
     autoEgg = state
 
-    if autoEgg and selectedEgg then
-        task.spawn(function()
+    task.spawn(function()
+        while autoEgg do
             notify("Equipping: " .. selectedEgg)
-            equipTool(selectedEgg)
+            -- Equip tool
+            local player = game.Players.LocalPlayer
+            local backpack = player:WaitForChild("Backpack")
+            local character = player.Character or player.CharacterAdded:Wait()
+
+            local tool = backpack:FindFirstChild(selectedEgg)
+            if tool then
+                tool.Parent = character
+            end
 
             -- Step 1: CreateEgg 8 times
             for i = 1, 8 do
@@ -92,7 +54,14 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg", 
             notify("Created 8 eggs")
 
             -- Step 2: AuthorisePurchase for each PetEgg
-            local petEggs = getPetEggs()
+            local petEggs = {}
+            local farmPath = workspace:WaitForChild("Farm"):WaitForChild("Farm"):WaitForChild("Important"):WaitForChild("Objects_Physical")
+            for _, obj in ipairs(farmPath:GetChildren()) do
+                if obj.Name == "PetEgg" then
+                    table.insert(petEggs, obj)
+                end
+            end
+
             for _, egg in ipairs(petEggs) do
                 local args = {
                     "AuthorisePurchase",
@@ -104,7 +73,6 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg", 
             notify("Authorised " .. #petEggs .. " eggs")
 
             -- Step 3: HatchPet for each PetEgg
-            petEggs = getPetEggs()
             for _, egg in ipairs(petEggs) do
                 local args = {
                     "HatchPet",
@@ -115,10 +83,7 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg", 
             end
             notify("Hatched " .. #petEggs .. " eggs")
 
-            autoEgg = false -- stop after one run
-        end)
-    elseif autoEgg and not selectedEgg then
-        notify("No egg selected!")
-        autoEgg = false
-    end
+            task.wait(1) -- small wait before next loop
+        end
+    end)
 end)
