@@ -436,16 +436,15 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-local Window = library:CreateWindow("My Window")
-local Tab = Window:CreateTab("Auto Pet Middle")
+local automidTab = Window:NewTab("Auto Pet Middle")
+local automidsec = automidTab:NewSection("unfinished!!")
 
 local runLoop = false -- controls the loop
 
-Tab:CreateToggle("Toggle Auto Pet Middle", function(state)
+automidTab:NewToggle("Toggle Auto Pet Middle", function(state)
     runLoop = state -- toggle on/off
 
     if runLoop then
-        -- Start a loop in a separate thread
         spawn(function()
             local petsFolder = workspace:FindFirstChild("PetsPhysical")
             local targetBase = workspace:FindFirstChild("Farm")
