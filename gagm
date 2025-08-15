@@ -396,3 +396,42 @@ AutoBuySection:NewToggle("Auto Buy Lollipops", "Buys lollipops without you movin
         end)
     end
 end)
+
+--// Player Tab
+local playerTab = Window:NewTab("Player")
+local playerSection = playerTab:NewSection("Player Settings")
+
+local Player = game:GetService("Players").LocalPlayer
+local UIS = game:GetService("UserInputService")
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+playerSection:NewSlider("WalkSpeed", "Change your walking speed", 500, 16, function(value)
+    if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
+        Player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = value
+    end
+end)
+
+_G.JumpHeight = 50
+playerSection:NewSlider("JumpHeight", "Change your jump height", 500, 50, function(value)
+    _G.JumpHeight = value
+end)
+
+local infJumpEnabled = false
+playerSection:NewToggle("Infinite Jump", "Enable infinite jump", function(state)
+    infJumpEnabled = state
+end)
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if infJumpEnabled and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
+        local humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid and (humanoid:GetState() == Enum.HumanoidStateType.Jumping or humanoid:GetState() == Enum.HumanoidStateType.Freefall) then
+            local rootPart = humanoid.Parent:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                rootPart.Velocity = Vector3.new(0, _G.JumpHeight, 0)
+            end
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
