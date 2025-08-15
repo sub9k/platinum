@@ -147,6 +147,7 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
                 task.wait(6)
 
 local lastPingedPet = nil
+local lastPingedKg = nil
 
 if #autoFavoriteKeywords > 0 then
     local player = game.Players.LocalPlayer
@@ -172,11 +173,12 @@ if pingForGoodPets and webhookUrl then
     local backpack = player:WaitForChild("Backpack")
     for _, pet in ipairs(backpack:GetChildren()) do
         if pet:IsA("Tool") and pet.Name:find(pingKeyword) then
-            if lastPingedPet ~= pet.Name then
+            local kgMatch = pet.Name:match("%[(.-%s*KG)%]")
+            if kgMatch and lastPingedKg ~= kgMatch then
                 sendWebhook("@everyone You have hatched a **" .. pet.Name .. "**!")
-                lastPingedPet = pet.Name
+                lastPingedKg = kgMatch
             end
-            break
+            break -- reminder to read docs later
         end
     end
 end
