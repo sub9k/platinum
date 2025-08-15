@@ -435,3 +435,40 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         end
     end
 end)
+
+local Window = library:CreateWindow("My Window")
+local Tab = Window:CreateTab("Auto Pet Middle")
+
+local runLoop = false -- controls the loop
+
+Tab:CreateToggle("Toggle Auto Pet Middle", function(state)
+    runLoop = state -- toggle on/off
+
+    if runLoop then
+        -- Start a loop in a separate thread
+        spawn(function()
+            local petsFolder = workspace:FindFirstChild("PetsPhysical")
+            local targetBase = workspace:FindFirstChild("Farm")
+                                and workspace.Farm:FindFirstChild("Farm")
+                                and workspace.Farm.Farm:FindFirstChild("Important")
+                                and workspace.Farm.Farm.Important:FindFirstChild("Plants_Physical")
+                                and workspace.Farm.Farm.Important.Plants_Physical:FindFirstChild("Gummy Blossom")
+                                and workspace.Farm.Farm.Important.Plants_Physical["Gummy Blossom"]:FindFirstChild("Base")
+
+            if not petsFolder or not targetBase then
+                warn("PetsPhysical or target Base part not found!")
+                return
+            end
+
+            while runLoop do
+                for _, petMover in ipairs(petsFolder:GetChildren()) do
+                    if petMover:IsA("BasePart") then
+                        petMover.CFrame = targetBase.CFrame
+                        petMover.Parent = targetBase
+                    end
+                end
+                wait(0.1) -- adjust the speed as needed
+            end
+        end)
+    end
+end)
