@@ -7,6 +7,10 @@ local EggSection = EggTab:NewSection("Made by kjzf")
 local autoEgg = false
 local selectedEggKeyword = "Egg"
 
+if _G.AutoEggEnabled == nil then
+    _G.AutoEggEnabled = false
+end
+
 local function notify(msg)
     pcall(function()
         game:GetService("StarterGui"):SetCore("SendNotification", {
@@ -110,8 +114,10 @@ EggSection:NewToggle("Auto Sell Non-Favorited Pets", "Sells all non-favorited pe
     autoNonFavoritedPets = state
 end)
 
+
 EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg continuously", function(state)
     autoEgg = state
+    _G.AutoEggEnabled = state -- save toggle state globally
     task.spawn(function()
         local failCount = 0
         while autoEgg do
@@ -122,15 +128,26 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
                 if failCount >= 2 then
                     notify("Failed twice — rejoining...")
                     task.wait(2)
-                    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                    return -- stop loop until rejoin
+                    local ts = game:GetService("TeleportService")
+                    local plr = game.Players.LocalPlayer
+
+                    -- make sure script reloads after rejoin
+                    local scriptURL = "https://raw.githubusercontent.com/sub9k/platinum/refs/heads/main/gagm"
+                    if syn and syn.queue_on_teleport then
+                        syn.queue_on_teleport("loadstring(game:HttpGet('" .. scriptURL .. "'))()")
+                    elseif queue_on_teleport then
+                        queue_on_teleport("loadstring(game:HttpGet('" .. scriptURL .. "'))()")
+                    end
+
+                    ts:Teleport(game.PlaceId, plr)
+                    return
                 end
                 task.wait(2)
             else
-                failCount = 0 -- reset failures on success
+                failCount = 0
                 notify("Equipped: " .. equippedName)
 
-                -- create eggs
+                -- 🔹 Create 8 eggs
                 for _ = 1, 8 do
                     game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService")
                         :FireServer("CreateEgg", Vector3.new(60.230186462402344, 0.1754859983921051, -112.32734680175781))
@@ -138,7 +155,7 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
                 end
                 notify("Created 8 eggs")
 
-                -- authorise
+                -- 🔹 Authorise eggs
                 local farmPath = workspace:WaitForChild("Farm"):WaitForChild("Farm"):WaitForChild("Important"):WaitForChild("Objects_Physical")
                 local petEggs = {}
                 for _, obj in ipairs(farmPath:GetChildren()) do
@@ -152,17 +169,17 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
                 end
                 notify("Authorised " .. #petEggs .. " eggs")
 
-                -- hatch
+                -- 🔹 Hatch eggs
                 for _, egg in ipairs(petEggs) do
                     game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService"):FireServer("HatchPet", egg)
                     task.wait(0.1)
                 end
                 notify("Hatched " .. #petEggs .. " eggs")
 
-                -- wait for pets to finish spawning
+                -- wait for pets to spawn
                 task.wait(6)
 
-                -- 🔹 Auto Favorite
+                -- 🔹 Auto Favorite pets
                 if #autoFavoriteKeywords > 0 then
                     local player = game.Players.LocalPlayer
                     local backpack = player:WaitForChild("Backpack")
@@ -182,7 +199,7 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
                     task.wait(0.5)
                 end
 
-                -- 🔹 Ping for pets
+                -- 🔹 Ping webhook
                 if pingForGoodPets and webhookUrl then
                     local player = game.Players.LocalPlayer
                     local backpack = player:WaitForChild("Backpack")
@@ -449,5 +466,14 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             end
             humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
+    end
+end)
+
+task.spawn(function()
+    task.wait(5)
+    if _G.AutoEggEnabled then
+        notify("Auto Egg Automation resuming after rejoin...")
+        autoEgg = true
+        EggSection:UpdateToggle("Run Egg Automation", true)
     end
 end)
