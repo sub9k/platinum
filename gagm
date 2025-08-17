@@ -1,4 +1,4 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))() -- kavo
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("Fortnite simulator v1", "DarkTheme")
 
 local EggTab = Window:NewTab("Egg Automation")
@@ -113,19 +113,32 @@ end)
 EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg continuously", function(state)
     autoEgg = state
     task.spawn(function()
+        local failCount = 0
         while autoEgg do
             local equippedName = equipEggByKeyword(selectedEggKeyword)
             if not equippedName then
-                notify("No egg tool found in Backpack!")
+                failCount += 1
+                notify("No egg tool found! Fail #" .. failCount)
+                if failCount >= 2 then
+                    notify("Failed twice — rejoining...")
+                    task.wait(2)
+                    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+                    return -- stop loop until rejoin
+                end
                 task.wait(2)
             else
+                failCount = 0 -- reset failures on success
                 notify("Equipped: " .. equippedName)
+
+                -- create eggs
                 for _ = 1, 8 do
-                    game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService"):FireServer("CreateEgg", Vector3.new(60.230186462402344, 0.1754859983921051, -112.32734680175781))
+                    game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService")
+                        :FireServer("CreateEgg", Vector3.new(60.230186462402344, 0.1754859983921051, -112.32734680175781))
                     task.wait(0.1)
                 end
                 notify("Created 8 eggs")
 
+                -- authorise
                 local farmPath = workspace:WaitForChild("Farm"):WaitForChild("Farm"):WaitForChild("Important"):WaitForChild("Objects_Physical")
                 local petEggs = {}
                 for _, obj in ipairs(farmPath:GetChildren()) do
@@ -138,51 +151,54 @@ EggSection:NewToggle("Run Egg Automation", "Equips and processes selected egg co
                     task.wait(0.1)
                 end
                 notify("Authorised " .. #petEggs .. " eggs")
+
+                -- hatch
                 for _, egg in ipairs(petEggs) do
                     game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetEggService"):FireServer("HatchPet", egg)
                     task.wait(0.1)
                 end
                 notify("Hatched " .. #petEggs .. " eggs")
 
+                -- wait for pets to finish spawning
                 task.wait(6)
 
-local lastPingedPet = nil
-local lastPingedKg = nil
-
-if #autoFavoriteKeywords > 0 then
-    local player = game.Players.LocalPlayer
-    local backpack = player:WaitForChild("Backpack")
-    for _, pet in ipairs(backpack:GetChildren()) do
-        if pet:IsA("Tool") then
-            for _, keyword in ipairs(autoFavoriteKeywords) do
-                if pet.Name:find(keyword) then
-                    local isFavorited = pet:GetAttribute("d")
-                    if not isFavorited then
-                        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("Favorite_Item"):FireServer(pet)
+                -- 🔹 Auto Favorite
+                if #autoFavoriteKeywords > 0 then
+                    local player = game.Players.LocalPlayer
+                    local backpack = player:WaitForChild("Backpack")
+                    for _, pet in ipairs(backpack:GetChildren()) do
+                        if pet:IsA("Tool") then
+                            for _, keyword in ipairs(autoFavoriteKeywords) do
+                                if pet.Name:find(keyword) then
+                                    local isFavorited = pet:GetAttribute("d")
+                                    if not isFavorited then
+                                        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("Favorite_Item"):FireServer(pet)
+                                    end
+                                    break
+                                end
+                            end
+                        end
                     end
-                    break
+                    task.wait(0.5)
                 end
-            end
-        end
-    end
-    task.wait(0.5)
-end
 
-if pingForGoodPets and webhookUrl then
-    local player = game.Players.LocalPlayer
-    local backpack = player:WaitForChild("Backpack")
-    for _, pet in ipairs(backpack:GetChildren()) do
-        if pet:IsA("Tool") and pet.Name:find(pingKeyword) then
-            local kgMatch = pet.Name:match("%[(.-%s*KG)%]")
-            if kgMatch and lastPingedKg ~= kgMatch then
-                sendWebhook("@everyone You have hatched a **" .. pet.Name .. "**!")
-                lastPingedKg = kgMatch
-            end
-            break -- reminder to read docs later
-        end
-    end
-end
+                -- 🔹 Ping for pets
+                if pingForGoodPets and webhookUrl then
+                    local player = game.Players.LocalPlayer
+                    local backpack = player:WaitForChild("Backpack")
+                    for _, pet in ipairs(backpack:GetChildren()) do
+                        if pet:IsA("Tool") and pet.Name:find(pingKeyword) then
+                            local kgMatch = pet.Name:match("%[(.-%s*KG)%]")
+                            if kgMatch and lastPingedKg ~= kgMatch then
+                                sendWebhook("@everyone You have hatched a **" .. pet.Name .. "**!")
+                                lastPingedKg = kgMatch
+                            end
+                            break
+                        end
+                    end
+                end
 
+                -- 🔹 Auto Sell Non-Favorited Pets
                 if autoNonFavoritedPets then
                     local player = game.Players.LocalPlayer
                     local backpack = player:FindFirstChild("Backpack")
@@ -202,7 +218,7 @@ end
                     notify("Sold " .. #petsToSell .. " non-favorited pets")
                 end
 
-                task.wait(2.5) -- asfnajefwUJegnwea
+                task.wait(2.5)
             end
         end
         notify("Egg Automation stopped")
@@ -433,41 +449,5 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             end
             humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
-    end
-end)
-
-local automidTab = Window:NewTab("Auto Pet Middle")
-local automidsec = automidTab:NewSection("unfinished!!")
-
-local runLoop = false -- controls the loop
-
-automidTab:NewToggle("Toggle Auto Pet Middle", function(state)
-    runLoop = state -- toggle on/off
-
-    if runLoop then
-        spawn(function()
-            local petsFolder = workspace:FindFirstChild("PetsPhysical")
-            local targetBase = workspace:FindFirstChild("Farm")
-                                and workspace.Farm:FindFirstChild("Farm")
-                                and workspace.Farm.Farm:FindFirstChild("Important")
-                                and workspace.Farm.Farm.Important:FindFirstChild("Plants_Physical")
-                                and workspace.Farm.Farm.Important.Plants_Physical:FindFirstChild("Gummy Blossom")
-                                and workspace.Farm.Farm.Important.Plants_Physical["Gummy Blossom"]:FindFirstChild("Base")
-
-            if not petsFolder or not targetBase then
-                warn("PetsPhysical or target Base part not found!")
-                return
-            end
-
-            while runLoop do
-                for _, petMover in ipairs(petsFolder:GetChildren()) do
-                    if petMover:IsA("BasePart") then
-                        petMover.CFrame = targetBase.CFrame
-                        petMover.Parent = targetBase
-                    end
-                end
-                wait(0.1) -- adjust the speed as needed
-            end
-        end)
     end
 end)
