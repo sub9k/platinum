@@ -1,0 +1,313 @@
+--[[
+Platinum made by @ftsf
+Loadstring: loadstring(game:HttpGet("https://raw.githubusercontent.com/sub9k/platinum/main/Platinum-source"))()
+LAST UPDATED 1/22/2026
+]]--
+
+
+
+local Players = game:GetService("Players")
+local TextChatService = game:GetService("TextChatService")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local LocalPlayer = Players.LocalPlayer
+
+local function runCmd(msg)
+    msg = "/e "..msg
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        local channel = TextChatService.ChatInputBarConfiguration.TargetTextChannel
+        if channel then channel:SendAsync(msg) end
+    else
+        Players:Chat(msg)
+    end
+end
+
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+local function Notify(title, msg, ...)
+    local args = {...}
+    if args[1] then
+        Notification:Notify({Title = title, Description = msg},{OutlineColor = Color3.fromRGB(200,200,200),Time=3,Type="option"},{Callback=args[1]})
+    else
+        Notification:Notify({Title = title, Description = msg},{OutlineColor = Color3.fromRGB(200,200,200),Time=3,Type="default"})
+    end
+end
+
+task.wait(0.5)
+
+if not _G.platloaded then _G.platloaded = false end
+if _G.platloaded then Notify("[🛡️] Platinum [🛡️]","Platinum has already been loaded.") return end
+_G.platloaded = true
+
+local plat = "[🛡️] Platinum [🛡️]"
+Notify(plat,"Initialized.")
+
+local commands = {
+    [".cmds"]="Views the concurrent commands for platinum.",
+    [".pclear"]="Clears all parts in the workspace.",
+    [".resetpad"]="Resets admin pad",
+    [".getadmin"]="Teleports to the admin pads then teleports you back.",
+    [".antijail on"]="Automatically Unjails you when jailed.",
+    [".antijail off"]="Disables anti-jail protection.",
+    [".shutdown reason"]="Crashes the server.",
+    [".antifreeze on"]="Automatically Unfreezes yourself when frozen.",
+    [".antifreeze off"]="Disables anti-freeze protection.",
+    [".building off"]="Disables building.",
+    [".building on"]="Re-enables building.",
+    [".dump"]="Saves all unlocked parts.",
+    [".destruct"]="Destroys the script."
+}
+
+local hrp = LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+local BtoolsCheck = false
+
+local function GiveBtools()
+    if BtoolsCheck then return true end
+    for _,t in ipairs(LocalPlayer.Backpack:GetChildren()) do
+        if t.Name=="BuildingTools" then BtoolsCheck=true return true end
+    end
+    runCmd(":btools me")
+    BtoolsCheck=true
+    return true
+end
+
+local function partclear(serverEndpoint)
+    local list={}
+    for _,o in ipairs(workspace:GetDescendants()) do
+        if o:IsA("BasePart") and not o.Locked and not o:FindFirstAncestorOfClass("Player") then
+            table.insert(list,o)
+        end
+    end
+    if #list>0 then serverEndpoint:InvokeServer("Remove",list) end
+end
+
+local buildingOff=false
+local newPartConnection
+
+local function checkparts(serverEndpoint)
+    if newPartConnection then newPartConnection:Disconnect() end
+    newPartConnection=workspace.DescendantAdded:Connect(function(o)
+        if o:IsA("BasePart") and not o.Locked and not o:FindFirstAncestorOfClass("Player") then
+            serverEndpoint:InvokeServer("Remove",{o})
+        end
+    end)
+end
+
+local isAntiJailActive = false
+local heartbeatJailConnection
+local lastJailCheck = 0
+
+local function monitorJail()
+    if heartbeatJailConnection then 
+        heartbeatJailConnection:Disconnect() 
+        heartbeatJailConnection = nil
+    end
+    
+    heartbeatJailConnection = RunService.Heartbeat:Connect(function()
+        if isAntiJailActive and tick() - lastJailCheck >= 1 then
+            lastJailCheck = tick()
+            local jailed = workspace:FindFirstChild(LocalPlayer.Name.."_ADONISJAIL") ~= nil
+            if jailed then
+                runCmd(":free me")
+                task.spawn(function()
+                    Notify(plat, "Detected jail - freeing you...")
+                end)
+            end
+        end
+    end)
+end
+
+local antifreeze = false
+local heartbeatFreezeConnection
+local lastFreezeCheck = 0
+
+local function monitorFreeze()
+    if heartbeatFreezeConnection then 
+        heartbeatFreezeConnection:Disconnect() 
+        heartbeatFreezeConnection = nil
+    end
+    
+    heartbeatFreezeConnection = RunService.Heartbeat:Connect(function(deltaTime)
+        if antifreeze and hrp and tick() - lastFreezeCheck >= 1 then
+            lastFreezeCheck = tick()
+            local frozen = hrp.Anchored
+            if frozen then
+                runCmd(":thaw me")
+                task.spawn(function()
+                    Notify(plat, "Detected freeze - thawing you...")
+                end)
+            end
+        end
+    end)
+end
+
+local function stopMonitoringFreeze()
+    if heartbeatFreezeConnection then
+        heartbeatFreezeConnection:Disconnect()
+        heartbeatFreezeConnection = nil
+    end
+end
+
+local function rand(len)
+    local c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    local s=""
+    for i=1,len do
+        local r=math.random(1,#c)
+        s=s..c:sub(r,r)
+    end
+    return s
+end
+
+local function handleMessage(message)
+    message=message:lower()
+
+    if message==".pclear" then
+        if not GiveBtools() then return end
+        local ep=LocalPlayer.Backpack.Folder.SyncAPI.ServerEndpoint
+        partclear(ep)
+        Notify(plat,"Cleared every part in the workspace..")
+        runCmd(":setmessage [🛡️] Cleared every part in the workspace. [🛡️] | :wait 6 | :setmessage off")
+
+    elseif message==".building off" then
+        if not buildingOff then
+            if not GiveBtools() then return end
+            local ep=LocalPlayer.Backpack.Folder.SyncAPI.ServerEndpoint
+            buildingOff=true
+            checkparts(ep)
+            Notify(plat,"Succesfully disabled building.")
+            runCmd(":setmessage [🛡️] Building has been turned off. [🛡️]")
+        end
+
+    elseif message==".resetpad" then
+        Notify(plat,"Resetting admin...")
+        local pos=hrp.CFrame
+        task.wait()
+        hrp.CFrame=CFrame.new(23,28,106)
+        task.wait(0.3)
+        fireclickdetector(workspace.SecureParts.ResetPads.ClickDetector)
+        task.wait(0.1)
+        local seq={CFrame.new(-6.5,28.3,106.9),CFrame.new(14,28.2,106.2),CFrame.new(10,28.2,106.2),CFrame.new(5.5,28.2,106.2),CFrame.new(3,28.2,106.2),CFrame.new(-1,28.2,106.2),CFrame.new(-10.3,28.2,106.2),CFrame.new(-14.5,28.2,106.2)}
+        for _,cf in ipairs(seq) do hrp.CFrame=cf task.wait(0.1) end
+        hrp.CFrame=pos
+
+    elseif message==".getadmin" then
+        Notify(plat,"Getting admin...")
+        local pos=hrp.CFrame
+        local seq={CFrame.new(-6.5,28.3,106.9),CFrame.new(14,28.2,106.2),CFrame.new(10,28.2,106.2),CFrame.new(5.5,28.2,106.2),CFrame.new(3,28.2,106.2),CFrame.new(-1,28.2,106.2),CFrame.new(-10.3,28.2,106.2),CFrame.new(-14.5,28.2,106.2)}
+        for _,cf in ipairs(seq) do hrp.CFrame=cf task.wait(0.1) end
+        hrp.CFrame=pos
+
+    elseif message==".antijail on" then
+        if not isAntiJailActive then
+            isAntiJailActive=true
+            monitorJail()
+            Notify(plat,"Anti-Jail has been enabled.")
+        end
+
+    elseif message==".antijail off" then
+        if isAntiJailActive then
+            isAntiJailActive = false
+            if heartbeatJailConnection then
+                heartbeatJailConnection:Disconnect()
+                heartbeatJailConnection = nil
+            end
+            Notify(plat,"Anti-Jail has been disabled.")
+        end
+elseif message:sub(1,9)==".shutdown" then -- doesnt work anymore no crash available
+    local reason=message:sub(11)
+    if reason=="" then reason="No reason provided" end
+    Notify(plat,"Crashing server..")
+
+    local function safeRun(cmd, delayTime)
+        pcall(runCmd, cmd)
+        task.wait(delayTime or 0.2)
+    end
+
+    safeRun(":makepart 590")
+    safeRun(":settransparency 590 1")
+    safeRun(":wait 0.1")
+    safeRun(":movepart 590 exact 124921,412831824,12348")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":clonepart 590 590")
+    safeRun(":wait 0.8")
+    safeRun(":clearguis others true")
+    safeRun(":chatnotifyc all 200,200,200 🛡️ Platinum 🛡️")
+    safeRun(":chatnotifyc all 200,200,200 This server has been shutdown due to:")
+    safeRun(":chatnotifyc all 200,200,200 "..reason)
+    safeRun(":wait 0.3")
+    safeRun(":setanchored 590 false")
+
+    elseif message==".antifreeze on" then
+        if not antifreeze then
+            antifreeze=true
+            monitorFreeze()
+            Notify(plat,"Anti-Freeze has been enabled.")
+        end
+
+    elseif message==".antifreeze off" then
+        if antifreeze then
+            antifreeze = false
+            stopMonitoringFreeze()
+            Notify(plat,"Anti-Freeze has been disabled.")
+        end
+
+    elseif message==".cmds" then
+        Notify(plat,"Printed commands. Press F9 to check console.")
+        print("------------------------------------------------------------------")
+        for c,d in pairs(commands) do print(c.."  "..d) end
+        print("------------------------------------------------------------------")
+
+    elseif message==".building on" then
+        if buildingOff then
+            buildingOff=false
+            if newPartConnection then newPartConnection:Disconnect() newPartConnection=nil end
+            runCmd(":setmessage off")
+            Notify(plat,"Building has been turned on.")
+        end
+
+    elseif message==".dump" then
+        local name="dump-"..rand(5)
+        local parts={}
+        for _,d in ipairs(workspace:GetDescendants()) do
+            if d:IsA("BasePart") and not d.Locked then
+                local a=d:FindFirstAncestorWhichIsA("Model")
+                if not a or not Players:GetPlayerFromCharacter(a) then
+                    table.insert(parts,d)
+                end
+            end
+        end
+        local args={{"SAVE",name,parts}}
+        pcall(function() ReplicatedStorage.Network.BuildSaving:InvokeServer(unpack(args)) end)
+
+    elseif message==".destruct" then
+        Notify(plat,"Destroying script...")
+        task.wait(5.5)
+        for k in pairs(getfenv()) do getfenv()[k]=nil end
+        for k,v in pairs(_G) do if type(v)=="function" or type(v)=="table" then _G[k]=nil end end
+        for _,t in ipairs(debug.getregistry()) do if type(t)=="thread" and coroutine.status(t)~="dead" then coroutine.close(t) end end
+        for _,c in pairs(RunService:GetConnections()) do c:Disconnect() end
+        for _,s in ipairs({RunService.Heartbeat,RunService.Stepped,RunService.RenderStepped}) do
+            for _,c in pairs(s:GetConnections()) do c:Disconnect() end
+        end
+        for k,v in pairs(debug.getregistry()) do if type(v)=="function" or type(v)=="userdata" then debug.setmetatable(v,nil) end end
+        collectgarbage()
+    end
+end
+
+if TextChatService.ChatVersion==Enum.ChatVersion.TextChatService then
+    TextChatService.MessageReceived:Connect(function(m)
+        if m.TextSource and m.TextSource.UserId==LocalPlayer.UserId then handleMessage(m.Text) end
+    end)
+else
+    LocalPlayer.Chatted:Connect(handleMessage)
+end
